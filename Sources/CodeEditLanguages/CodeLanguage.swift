@@ -13,6 +13,36 @@ import RegexBuilder
 
 /// A structure holding metadata for code languages
 public struct CodeLanguage {
+
+    /// An external initializer, for tree sitter definitions linked outside this package
+    public init(
+        tsName: String,
+        tsLanguage: OpaquePointer,
+        highlightQuery: String,
+        extensions: Set<String>,
+        lineCommentString: String,
+        rangeCommentStrings: (String, String),
+        documentationCommentStrings: Set<DocumentationComments> = [],
+        additionalIdentifiers: Set<String> = []
+    ) {
+        self.id = .externallyDefined
+        self.tsName = tsName
+        self.extensions = extensions
+        self.lineCommentString = lineCommentString
+        self.rangeCommentStrings = rangeCommentStrings
+        self.documentationCommentStrings = documentationCommentStrings
+        self.parentQueryURL = nil
+        self.additionalHighlights = nil
+        self.additionalIdentifiers = additionalIdentifiers
+
+        tsLanguageOverride = tsLanguage
+        self.primaryHighlightQuery = highlightQuery
+    }
+
+    private let tsLanguageOverride: OpaquePointer?
+    internal let primaryHighlightQuery: String?
+
+
     internal init(
         id: TreeSitterLanguage,
         tsName: String,
@@ -33,6 +63,9 @@ public struct CodeLanguage {
         self.parentQueryURL = parentURL
         self.additionalHighlights = highlights
         self.additionalIdentifiers = additionalIdentifiers
+        
+        tsLanguageOverride = nil
+        primaryHighlightQuery = nil
     }
 
     /// The ID of the language
@@ -86,6 +119,10 @@ public struct CodeLanguage {
 
     /// Gets the TSLanguage from `tree-sitter`
     private var tsLanguage: OpaquePointer? {
+        if let tsLanguageOverride {
+            return tsLanguageOverride
+        }
+        
         switch id {
         case .agda:
             return tree_sitter_agda()
@@ -105,6 +142,8 @@ public struct CodeLanguage {
             return tree_sitter_dockerfile()
         case .elixir:
             return tree_sitter_elixir()
+        case .externallyDefined:
+            return tsLanguageOverride
         case .go:
             return tree_sitter_go()
         case .goMod:

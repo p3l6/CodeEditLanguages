@@ -18,6 +18,7 @@ public enum TreeSitterLanguage: String {
     case dart
     case dockerfile
     case elixir
+    case externallyDefined
     case go
     case goMod
     case haskell

@@ -14,6 +14,8 @@ public class TreeSitterModel {
     /// The singleton/shared instance of ``TreeSitterModel``.
     public static let shared: TreeSitterModel = .init()
 
+    public var externalLanguage: CodeLanguage?
+
     /// Get a query for a specific language
     /// - Parameter language: The language to request the query for.
     /// - Returns: A Query if available. Returns `nil` for not implemented languages
@@ -38,6 +40,14 @@ public class TreeSitterModel {
             return dockerfileQuery
         case .elixir:
             return elixirQuery
+        case .externallyDefined:
+            guard let externalLanguage,
+               let language = externalLanguage.language,
+               let query = externalLanguage.primaryHighlightQuery,
+               let data = query.data(using: .ascii) else {
+               return nil
+            }
+            return try? Query(language: language, data: data)
         case .go:
             return goQuery
         case .goMod:
