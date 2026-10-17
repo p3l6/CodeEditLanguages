@@ -8,7 +8,7 @@
 import Foundation
 
 /// A collection of languages that are supported by `tree-sitter`
-public enum TreeSitterLanguage: String {
+public enum TreeSitterLanguage: Equatable, Hashable {
     case agda
     case bash
     case c
@@ -18,7 +18,7 @@ public enum TreeSitterLanguage: String {
     case dart
     case dockerfile
     case elixir
-    case externallyDefined
+    case externallyDefined(name: String)
     case go
     case goMod
     case haskell

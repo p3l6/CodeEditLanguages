@@ -25,7 +25,7 @@ public struct CodeLanguage {
         documentationCommentStrings: Set<DocumentationComments> = [],
         additionalIdentifiers: Set<String> = []
     ) {
-        self.id = .externallyDefined
+        self.id = .externallyDefined(name: tsName)
         self.tsName = tsName
         self.extensions = extensions
         self.lineCommentString = lineCommentString
@@ -37,6 +37,8 @@ public struct CodeLanguage {
 
         tsLanguageOverride = tsLanguage
         self.primaryHighlightQuery = highlightQuery
+        
+        TreeSitterModel.shared.externalLanguageAndHighlights[tsName] = (Language(language: tsLanguage), highlightQuery)
     }
 
     private let tsLanguageOverride: OpaquePointer?
